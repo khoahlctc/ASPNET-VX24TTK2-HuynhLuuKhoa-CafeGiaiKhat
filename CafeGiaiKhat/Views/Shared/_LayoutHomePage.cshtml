@@ -1,0 +1,1099 @@
+﻿@using ProTechTiveGear.Models;
+@{
+    Customer acc = (Customer)Session["usr"];
+    string username = "";
+    if (Request.Cookies["usr"] != null)
+    {
+        username = Request.Cookies["usr"].Value;
+    }
+
+    // Khởi tạo biến đếm giỏ hàng thực tế từ Session
+    int cartCount = 0;
+    if (Session["Cart"] != null)
+    {
+        var cart = Session["Cart"] as List<ProTechTiveGear.Models.CartEntity>;
+        if (cart != null)
+        {
+            cartCount = cart.Sum(x => x.Quantity);
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link class="js-fav-icon" rel="icon" href="img/fav-icon.png" type="image/x-icon" />
+    <title>HuynhLuuKhoa Cafe | Premium Experience</title>
+
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet">
+    <link href="~/vendors/linearicons/style.css" rel="stylesheet">
+    <link href="~/vendors/flat-icon/flaticon.css" rel="stylesheet">
+    <link href="~/vendors/stroke-icon/style.css" rel="stylesheet">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet">
+    <link href="~/vendors/owl-carousel/owl.carousel.min.css" rel="stylesheet">
+    <link href="~/vendors/magnifc-popup/magnific-popup.css" rel="stylesheet">
+    <link href="~/vendors/nice-select/css/nice-select.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --bg-base: #ffffff;
+            --bg-deep: #f8f9fa;
+            --bg-darker: #f3f4f6;
+            --primary: #3B82F6;
+            --purple-glow: #7C3AED;
+            --cyan-glow: #06B6D4;
+            --text-main: #111827;
+            --text-muted: #4B5563;
+            /* Glass White */
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-highlight: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            box-sizing: border-box !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--cyan-glow));
+            border-radius: 5px;
+            border: 2px solid var(--bg-deep);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+            .reveal.active {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+        .ambient-glow-1 {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            animation: drift 25s infinite alternate ease-in-out;
+        }
+
+        .ambient-glow-2 {
+            position: absolute;
+            top: 40%;
+            right: -20%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+            animation: drift 30s infinite alternate-reverse ease-in-out;
+        }
+
+        @@keyframes drift {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+
+            100% {
+                transform: translate(8%, 5%) rotate(120deg) scale(1.1);
+            }
+        }
+
+        /* ================= CART BADGE ANIMATION ================= */
+        @@keyframes bounceBadge {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .badge-bounce {
+            animation: bounceBadge 300ms ease-in-out;
+        }
+
+        /* ================= PREMIUM STICKY HEADER ================= */
+        .luxury-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1005 !important;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid transparent;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 20px 0;
+        }
+
+            .luxury-header.scrolled {
+                background: var(--glass-bg);
+                backdrop-filter: blur(24px) saturate(180%);
+                border-bottom: 1px solid var(--glass-border);
+                padding: 12px 0;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            }
+
+        .header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-logo-container {
+            text-decoration: none !important;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .brand-logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--text-main);
+            transition: all 0.4s ease;
+        }
+
+        .brand-logo-accent {
+            background: linear-gradient(90deg, var(--purple-glow), var(--primary), var(--cyan-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 16px;
+            font-weight: 700;
+            margin-left: 4px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .premium-nav-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+            .premium-nav-wrapper ul, .middle_menu_three ul {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center;
+                gap: 32px;
+                list-style: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .premium-nav-wrapper li a, .middle_menu_three li a {
+                color: var(--text-muted) !important;
+                font-size: 14px !important;
+                font-weight: 600 !important;
+                text-transform: uppercase !important;
+                letter-spacing: 1px !important;
+                text-decoration: none !important;
+                transition: all 0.3s ease !important;
+                position: relative;
+                padding: 8px 0;
+            }
+
+                .premium-nav-wrapper li a::after, .middle_menu_three li a::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 50%;
+                    width: 0;
+                    height: 2px;
+                    background: linear-gradient(90deg, var(--primary), var(--cyan-glow));
+                    transition: all 0.3s ease;
+                    transform: translateX(-50%);
+                }
+
+                .premium-nav-wrapper li a:hover, .middle_menu_three li a:hover {
+                    color: var(--text-main) !important;
+                    text-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+                }
+
+                    .premium-nav-wrapper li a:hover::after, .middle_menu_three li a:hover::after {
+                        width: 100%;
+                    }
+
+        .header-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .action-glass-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main) !important;
+            font-size: 16px;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+            .action-glass-icon:hover {
+                background: linear-gradient(135deg, var(--primary), var(--cyan-glow));
+                border-color: transparent;
+                color: #FFF !important;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+            }
+
+        .cart-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #EF4444;
+            color: #FFF;
+            font-size: 11px;
+            font-weight: 800;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+            border: 2px solid #FFF;
+            pointer-events: none;
+        }
+
+        .btn-premium-cta {
+            background: linear-gradient(90deg, var(--primary), var(--purple-glow));
+            color: #FFF !important;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: none;
+            text-decoration: none !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: all 0.4s ease;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+            .btn-premium-cta:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(99, 102, 241, 0.45);
+            }
+
+        .btn-premium-secondary {
+            color: var(--text-main) !important;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none !important;
+            padding: 10px 16px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+            .btn-premium-secondary:hover {
+                color: var(--primary) !important;
+            }
+
+        .premium-user-menu {
+            position: relative;
+            list-style: none;
+        }
+
+            .premium-user-menu .dropdown-toggle {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                color: var(--text-main) !important;
+                text-decoration: none !important;
+                padding: 6px 18px;
+                background: rgba(0, 0, 0, 0.03);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                border-radius: 50px;
+                transition: all 0.3s ease;
+                font-weight: 600;
+            }
+
+                .premium-user-menu .dropdown-toggle:hover {
+                    background: rgba(0,0,0,0.06);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                }
+
+            .premium-user-menu .dropdown-menu {
+                position: absolute;
+                right: 0;
+                top: calc(100% + 12px);
+                background: rgba(255, 255, 255, 0.95) !important;
+                backdrop-filter: blur(30px);
+                border: 1px solid var(--glass-border);
+                border-radius: 20px;
+                min-width: 220px;
+                padding: 10px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(15px);
+                transition: all 0.4s ease;
+                display: block !important;
+                z-index: 1105 !important;
+            }
+
+            .premium-user-menu:hover .dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .premium-user-menu .dropdown-menu li a {
+                color: var(--text-muted) !important;
+                padding: 12px 16px;
+                border-radius: 12px;
+                display: block;
+                text-decoration: none !important;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.25s ease;
+            }
+
+                .premium-user-menu .dropdown-menu li a:hover {
+                    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08), rgba(6, 182, 212, 0.08));
+                    color: var(--text-main) !important;
+                    padding-left: 22px;
+                }
+
+        /* ================= FULLSCREEN HERO SECTION ================= */
+        .immersive-hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 750px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f9ff 40%, #eef4ff 70%, #f8f5ff 100%);
+        }
+
+        #premium-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero-mesh-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: center center;
+            mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero-content-core {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            max-width: 900px;
+            padding: 0 24px;
+        }
+
+        .hero-badge-glow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 8px 20px;
+            border-radius: 100px;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .hero-title-massive {
+            font-size: clamp(40px, 6vw, 76px);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            color: var(--text-main);
+            text-shadow: 2px 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .text-shimmer-span {
+            background: linear-gradient(90deg, #7C3AED, #3B82F6, #06B6D4, #7C3AED);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmerEffect 6s infinite linear;
+            text-shadow: none;
+            /* Shadow interferes with gradient text */
+            position: relative;
+        }
+
+        @@keyframes shimmerEffect {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 300% center;
+            }
+        }
+
+        .hero-desc-premium {
+            font-size: clamp(16px, 2.5vw, 20px);
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 40px auto;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .hero-actions-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* ================= VÙNG NỘI DUNG CHÍNH ================= */
+        .premium-content-wrapper {
+            position: relative;
+            z-index: 10;
+            background-color: transparent;
+            padding: 80px 0;
+            width: 100%;
+        }
+
+            .premium-content-wrapper .container {
+                margin: 0 auto !important;
+                display: block !important;
+                width: 95% !important;
+                max-width: 1600px !important;
+            }
+
+            .premium-content-wrapper [style*="background"],
+            .premium-content-wrapper [class*="bg-"] {
+                background: transparent;
+                background-color: transparent;
+            }
+
+            .premium-content-wrapper h1, .premium-content-wrapper h2,
+            .premium-content-wrapper h3, .premium-content-wrapper h4,
+            .premium-content-wrapper .title, .premium-content-wrapper .section-title {
+                color: var(--text-main) !important;
+                text-align: center !important;
+                width: 100% !important;
+                letter-spacing: 1px !important;
+                margin-bottom: 40px !important;
+                position: relative !important;
+                z-index: 2 !important;
+                text-shadow: 1px 2px 4px rgba(0,0,0,0.06) !important;
+            }
+
+        .cake_feature_row, .products-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+            gap: 30px !important;
+            margin: 0 !important;
+            width: 100% !important;
+            justify-items: center !important;
+        }
+
+        .premium-content-wrapper .row:not(.cake_feature_row) {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            margin-left: -15px !important;
+            margin-right: -15px !important;
+        }
+
+        /* ================= CẤU TRÚC CARD SẢN PHẨM ================= */
+        .modern_card, .card, .product-card, .menu-card {
+            position: relative !important;
+            margin: 0 auto !important;
+            z-index: auto !important;
+            width: 100% !important;
+            max-width: 320px !important;
+            min-height: 440px !important;
+            max-height: 480px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            padding: 20px !important;
+            border-radius: 24px !important;
+            overflow: hidden !important;
+            /* Glass White cho Cards */
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 1) !important;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04) !important;
+            transition: .35s ease !important;
+        }
+
+            .modern_card:hover, .card:hover, .product-card:hover {
+                transform: translateY(-8px) !important;
+                box-shadow: 0 25px 50px rgba(59, 130, 246, 0.12) !important;
+            }
+
+            .modern_card *, .card *, .product-card * {
+                position: relative !important;
+                top: auto !important;
+                bottom: auto !important;
+                left: auto !important;
+                right: auto !important;
+                transform: none !important;
+                float: none !important;
+                background: transparent !important;
+            }
+
+            .modern_card img, .card img, .product-image {
+                order: 1 !important;
+                width: 180px !important;
+                height: 180px !important;
+                object-fit: contain !important;
+                margin: 0 auto 15px !important;
+                display: block !important;
+            }
+
+            .modern_card p, .product-price, .price {
+                order: 2 !important;
+                font-size: 22px !important;
+                font-weight: 800 !important;
+                color: var(--primary) !important;
+                margin-bottom: 12px !important;
+                text-align: center !important;
+                width: 100% !important;
+                white-space: nowrap !important;
+                display: block !important;
+            }
+
+            .modern_card h3, .product-title, .product-name, h4 {
+                order: 3 !important;
+                font-size: 20px !important;
+                font-weight: 700 !important;
+                line-height: 1.3 !important;
+                text-align: center !important;
+                color: var(--text-main) !important;
+                margin-bottom: 15px !important;
+                min-height: 60px !important;
+                max-height: 60px !important;
+                width: 100% !important;
+                display: -webkit-box !important;
+                -webkit-line-clamp: 2 !important;
+                -webkit-box-orient: vertical !important;
+                overflow: hidden !important;
+                word-break: normal !important;
+                white-space: normal !important;
+                overflow-wrap: break-word !important;
+                text-shadow: none !important;
+            }
+
+            .modern_card a, .add-to-cart-btn, .cart-btn, .card a.btn {
+                order: 4 !important;
+                margin-top: auto !important;
+                width: 100% !important;
+                height: 48px !important;
+                border-radius: 12px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                background: linear-gradient(90deg, var(--purple-glow), var(--cyan-glow)) !important;
+                color: #FFFFFF !important;
+                font-weight: 600 !important;
+                text-transform: uppercase !important;
+                font-size: 13px !important;
+                letter-spacing: 0.5px !important;
+                border: none !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
+                box-shadow: 0 4px 15px rgba(6, 182, 212, 0.2) !important;
+                cursor: pointer !important;
+            }
+
+        img {
+            max-width: 100% !important;
+        }
+
+        /* ================= FUTURE FOOTER ================= */
+        .luxury-footer {
+            background-color: #ffffff;
+            position: relative;
+            z-index: 10;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 80px 0 40px 0;
+            overflow: hidden;
+        }
+
+        .footer-brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .footer-desc {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .footer-social-flex {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-glass-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none !important;
+            transition: all 0.4s ease;
+        }
+
+            .social-glass-icon:hover {
+                color: #FFF;
+                background: var(--primary);
+                transform: translateY(-4px);
+                box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
+            }
+
+        .footer-widget-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            text-transform: uppercase;
+        }
+
+        .footer-links-list li {
+            margin-bottom: 12px;
+            list-style: none;
+        }
+
+            .footer-links-list li a {
+                color: var(--text-muted);
+                font-weight: 500;
+                text-decoration: none !important;
+                font-size: 14px;
+                transition: all 0.25s ease;
+            }
+
+                .footer-links-list li a:hover {
+                    color: var(--primary);
+                    transform: translateX(6px);
+                }
+
+        .contact-info-block h4 {
+            color: var(--primary);
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .contact-info-block h5 {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-bottom-bar {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+            .footer-bottom-bar p {
+                color: var(--text-muted);
+                font-size: 13px;
+                font-weight: 500;
+            }
+
+        /* ================= RESPONSIVE MOBILE MENU ================= */
+        .mobile-menu-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 26px;
+            cursor: pointer;
+            padding: 5px 10px;
+            display: none;
+        }
+
+        @@media (max-width: 991px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .premium-nav-wrapper {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--glass-bg);
+                backdrop-filter: blur(24px) saturate(180%);
+                border-bottom: 1px solid var(--glass-border);
+                padding: 20px 0;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+                display: none;
+                flex-direction: column;
+                align-items: center;
+            }
+
+                .premium-nav-wrapper.active {
+                    display: flex;
+                    animation: fadeInDown 0.3s ease forwards;
+                }
+
+                .premium-nav-wrapper ul, .middle_menu_three ul {
+                    flex-direction: column !important;
+                    gap: 20px !important;
+                    width: 100%;
+                    text-align: center;
+                }
+        }
+
+        @@keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <header class="luxury-header" id="masterHeader">
+        <div class="container">
+            <div class="header-flex">
+                <a href="/" class="brand-logo-container">
+                    <span class="brand-logo-text">HuynhLuuKhoa</span>
+                    <span class="brand-logo-accent">Cafe</span>
+                </a>
+
+                <button class="mobile-menu-toggle" id="mobileMenuBtn">
+                    <i class="fa fa-bars"></i>
+                </button>
+
+                <nav class="premium-nav-wrapper">
+                    @Html.Action("Menu", "AuraStore")
+                </nav>
+
+                <div class="header-actions-right">
+                    <a href="#test-search" class="action-glass-icon popup-with-zoom-anim" title="Tìm Kiếm">
+                        <i class="fa fa-search"></i>
+                    </a>
+
+                    <a href="@Url.Action("cart", "Cart")" class="action-glass-icon" title="Giỏ Hàng">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cartBadge">@cartCount</span>
+                    </a>
+
+                    @if (Session["usr"] == null)
+                    {
+                        <a href="@Url.Action("Login","Login")" class="btn-premium-secondary">Đăng Nhập</a>
+                        <a href="@Url.Action("Register","Login")" class="btn-premium-cta">Đăng Ký</a>
+                    }
+                    else
+                    {
+                        <li class="premium-user-menu">
+                            <a class="dropdown-toggle" href="#" role="button">
+                                <span>@acc.Name</span>
+                                <img width="38" height="38" style="border-radius: 50%; border: 2px solid var(--primary);" src="@Url.Content("~/img/Item/avatar-default-icon.png")" alt="User Avatar">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="@Url.Action("Profile","AuraStore")"><i class="fa fa-user" style="margin-right:8px;"></i> Hồ Sơ</a></li>
+                                <li><a href="@Url.Action("ListOrderClient","AuraStore")"><i class="fa fa-shopping-basket" style="margin-right:8px;"></i> Đơn Hàng</a></li>
+                                <li><a href="@Url.Action("Changepassword","Login")"><i class="fa fa-key" style="margin-right:8px;"></i> Đổi mật khẩu</a></li>
+                                <li style="border-top: 1px solid rgba(0,0,0,0.05); margin-top:8px; padding-top:8px;"><a href="@Url.Action("SignOut","AuraStore")" style="color: #EF4444 !important;"><i class="fa fa-sign-out" style="margin-right:8px;"></i> Đăng xuất</a></li>
+                            </ul>
+                        </li>
+                    }
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="immersive-hero">
+        <canvas id="premium-particles"></canvas>
+        <div class="hero-mesh-grid"></div>
+
+        <div class="floating-ornament ornament-1"></div>
+        <div class="floating-ornament ornament-2"></div>
+
+        <div class="hero-content-core">
+            <div class="hero-badge-glow">
+                <i class="fa fa-bolt"></i> Next-Gen Coffee Experience 2026
+            </div>
+            <h1 class="hero-title-massive reveal">
+                Thưởng thức Hương vị Cafe <br />
+                <span class="text-shimmer-span">Nguyên Bản Đẳng Cấp</span>
+            </h1>
+            <p class="hero-desc-premium reveal">
+                Tinh hoa từ những hạt cafe sạch, canh tác hữu cơ chuẩn quốc tế, mang lại trải nghiệm hương vị thượng lưu trong từng giọt tinh chất.
+            </p>
+            <div class="hero-actions-group reveal" style="transition-delay: 0.2s;">
+                <a href="#menu-explore" class="btn-premium-cta" style="padding: 16px 40px; font-size: 15px;">Khám Phá Menu</a>
+                <a href="#reservation" class="btn-premium-secondary" style="font-size: 15px;"><i class="fa fa-play-circle" style="margin-right: 8px; font-size: 18px; vertical-align: middle;"></i> Đặt Trải Nghiệm</a>
+            </div>
+        </div>
+    </section>
+
+    <main class="premium-content-wrapper">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="luxury-footer">
+        <div class="container" style="max-width: 1400px; width: 95%;">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 col-12 reveal" style="margin-bottom: 30px;">
+                    <div class="footer-brand-title">HuynhLuuKhoa Cafe</div>
+                    <p class="footer-desc">
+                        Giữ trọn vẹn giá trị truyền thống, nâng tầm phong cách sống bằng công nghệ pha chế tân tiến nhất thế kỷ.
+                    </p>
+                    <div class="footer-social-flex">
+                        <a href="#" class="social-glass-icon"><i class="fa fa-facebook"></i></a>
+                        <a href="#" class="social-glass-icon"><i class="fa fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6 reveal" style="margin-bottom: 30px; transition-delay: 0.1s;">
+                    <div class="footer-widget-title">Menu Café</div>
+                    <ul class="footer-links-list" style="padding:0; margin:0;">
+                        <li><a href="#">Café Truyền thống</a></li>
+                        <li><a href="#">Café hương vị Ý</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6 reveal" style="margin-bottom: 30px; transition-delay: 0.2s;">
+                    <div class="footer-widget-title">Chính Sách Hệ Thống</div>
+                    <ul class="footer-links-list" style="padding:0; margin:0;">
+                        <li><a href="#">Giao hàng hỏa tốc siêu tốc</a></li>
+                        <li><a href="#">Đổi trả quyền lợi khách hàng</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-12 reveal" style="margin-bottom: 30px; transition-delay: 0.3s;">
+                    <div class="footer-widget-title">Tổng Đài Liên Hệ</div>
+                    <div class="contact-info-block">
+                        <h4>📞 0909.090.909</h4>
+                        <h5><i class="fa fa-map-marker" style="color: var(--primary); width: 16px;"></i> Địa chỉ: Khu Đô thị Café Chất</h5>
+                        <h5><i class="fa fa-envelope" style="color: var(--primary); width: 16px;"></i> Email: info@HuynhLuuKhoaCafe.com</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom-bar">
+                <p>© @DateTime.Now.Year HuynhLuuKhoa Cafe Corp. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    @Html.Action("Search", "AuraStore")
+
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/popper.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/theme.js"></script>
+
+    <script>
+        // --- Hiệu ứng header & Particle JS ---
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('masterHeader');
+            if (window.scrollY > 50) { header.classList.add('scrolled'); }
+            else { header.classList.remove('scrolled'); }
+        });
+
+        const revealElements = document.querySelectorAll('.reveal');
+        const observerOptions = { threshold: 0.15, rootMargin: "0px 0px -50px 0px" };
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active'); observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        const canvas = document.getElementById('premium-particles');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.8;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+
+                this.alpha = Math.random() * 0.3 + 0.1;
+                const colors = ['#60A5FA', '#8B5CF6', '#06B6D4'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            const numberOfParticles = Math.min(Math.floor((canvas.width * canvas.height) / 15000), 75);
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update(); particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles(); animateParticles();
+
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const navWrapper = document.querySelector('.premium-nav-wrapper');
+        if (mobileBtn) {
+            mobileBtn.addEventListener('click', function () {
+                navWrapper.classList.toggle('active');
+                const icon = this.querySelector('i');
+                if (navWrapper.classList.contains('active')) { icon.className = 'fa fa-times'; }
+                else { icon.className = 'fa fa-bars'; }
+            });
+        }
+
+        // --- XỬ LÝ AJAX ADD TO CART VÀ ANIMATION BADGE ---
+        function updateCartBadge(newCount) {
+            let badge = $('#cartBadge');
+            badge.text(newCount);
+
+            // Chạy lại CSS Animation mỗi khi cập nhật
+            badge.removeClass('badge-bounce');
+            void badge[0].offsetWidth; // Trigger reflow DOM
+            badge.addClass('badge-bounce');
+        }
+
+        $(document).ready(function () {
+            // Lắng nghe sự kiện click từ các nút có class .add-to-cart-btn
+            $(document).on('click', '.add-to-cart-btn, .cart-btn', function (e) {
+                e.preventDefault();
+
+                let productId = $(this).data('id');
+
+                if (!productId) {
+                    console.warn("Chưa gắn thuộc tính data-id cho thẻ button Add To Cart.");
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Cart/AddToCartAjax',
+                    type: 'POST',
+                    data: { id: productId },
+                    success: function (response) {
+                        // Xử lý nếu Controller bắt buộc đăng nhập
+                        if (response.requireLogin) {
+                            window.location.href = response.url;
+                            return;
+                        }
+
+                        // Nếu thành công, cập nhật số lượng mới
+                        if (response.success) {
+                            updateCartBadge(response.totalQuantity);
+                        }
+                    },
+                    error: function () {
+                        console.log("Lỗi kết nối khi gọi Action AddToCartAjax.");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+@RenderSection("scripts", required: false)

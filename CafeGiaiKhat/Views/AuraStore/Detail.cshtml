@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_LayoutHomePage.cshtml";
+}
+
+<style>
+    .quantity_box {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+        .quantity_box label {
+            font-weight: 600;
+            color: #4B5563;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .quantity_box input {
+            width: 80px;
+            height: 45px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+            .quantity_box input:focus {
+                border-color: #06B6D4;
+            }
+
+    /* Giao diện nút mới */
+    .btn-premium-cart {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #06B6D4, #3B82F6);
+        color: #ffffff !important;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 14px 35px;
+        border-radius: 50px;
+        text-decoration: none !important;
+        box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+        transition: all 0.4s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-premium-cart:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-premium-cart.disabled {
+            background: #e5e7eb;
+            color: #9ca3af !important;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+</style>
+
+<section class="product_details_area p_100">
+    <div id="product-detail-section" class="container">
+        <div class="row product_d_price">
+            <div class="col-lg-6">
+                <img class="resize-image-detail" src="~/img/Item/@Model.Picture" alt="">
+            </div>
+
+            <div class="col-lg-6">
+                <div class="product_details_text">
+                    <h4 style="font-size: 28px; font-weight: 800; color: #111827; margin-bottom: 10px;">@Model.Name</h4>
+                    <p style="color: #6B7280; font-size: 15px; line-height: 1.6; margin-bottom: 20px;">@Model.ShortTitle</p>
+
+                    <h5 style="font-size: 20px; font-weight: 600;">Giá: <span style="color: #EF4444; font-size: 24px; font-weight: 800;">@String.Format("{0:0,0}", Model.SellPrice) VND</span></h5>
+
+                    <div class="quantity_box">
+                        <label for="quantity">Số lượng:</label>
+                        <input type="number" min="1" max="10" value="1" id="quantity">
+                    </div>
+
+                    @if (Model.Quantity == 0)
+                    {
+                        <a class="btn-premium-cart disabled"><i class="fa fa-ban"></i> Hết hàng</a>
+                    }
+                    else
+                    {
+                        <a class="btn-premium-cart" href="@Url.Action("AddtoCart","Cart",new {@id=@Model.ID,@strURL=Request.Url.ToString() })">
+                            <i class="fa fa-shopping-cart" style="font-size: 18px;"></i> Thêm vào giỏ
+                        </a>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        <div class="product_tab_area">
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Mô tả</a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <p>@Html.Raw(@Model.Describe)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@Html.Action("Relatedproducts", "AuraStore", new { id = @Model.BrandID })

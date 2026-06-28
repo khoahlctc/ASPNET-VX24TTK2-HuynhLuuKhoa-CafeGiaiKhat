@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutHomePage.cshtml";
+    Response.Charset = "utf-8";
+    Response.AppendHeader("Content-Type", "text/html; charset=utf-8");
+}
+
+@model IEnumerable<ProTechTiveGear.Models.Item>
+
+<!-- KHÔNG DÙNG nền trắng (background-color: #ffffff) nữa -->
+<section class="welcome_bakery_area cake_feature_main" style="padding: 100px 0;">
+    <div class="container" id="menu-explore">
+        <div class="main_title" style="text-align: center; margin-bottom: 60px;">
+            <h2 class="section-title" style="font-size: 32px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;">
+                Thực đơn hôm nay
+            </h2>
+        </div>
+
+        <div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-3 col-md-4 col-sm-6" style="display: flex; margin-bottom: 20px;">
+            
+            <div class="card premium-glass-card" style="display: flex; flex-direction: column; width: 100%;">
+                        
+                <div class="product-image-wrapper">
+                    <a href="@Url.Action("Detail", "AuraStore", new { id = item.ID })#product-detail-section">
+                        <img src="~/img/Item/@item.Picture" alt="@item.Name" class="product-image">
+                    </a>
+                </div>
+
+                <div class="product-info" style="display: flex; flex-direction: column; flex-grow: 1; padding: 20px;">
+
+                    <h3 class="product-title" style="flex-grow: 1; margin-bottom: 10px;">@item.Name</h3>
+
+                    <p class="price" style="flex-shrink: 0; margin-bottom: 15px;">
+                        @string.Format("{0:0,0}", item.SellPrice) <small style="font-size: 12px; font-weight: 600;">VND</small>
+                    </p>
+
+                    <div style="margin-top: auto; width: 100%;">
+                        @if (item.Quantity == 0)
+                        {
+                            <span style="font-size: 12px; color: #EF4444; padding: 12px; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 50px; display: block; width: 100%; text-align: center; background: rgba(239, 68, 68, 0.1); box-sizing: border-box;">Hết hàng</span>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("AddtoCart","Cart",new {@id=item.ID,@strURL=Request.Url.ToString() })"
+                               class="btn add-to-cart"
+                               style="display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; box-sizing: border-box !important; padding: 12px !important; margin: 0 !important;">
+
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                                Thêm vào giỏ
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+    </div>
+</section>
+
+<!-- Xóa background #fafafa, đổi font sang chuẩn của hệ thống -->
+<section class="new_arivals_area" style="padding: 80px 0; font-family: Arial, sans-serif;">
+    <div class="container" id="reservation">
+        <div style="margin-bottom: 50px; border-left: 4px solid var(--cyan-glow); padding-left: 20px;">
+            @*<h2 style="font-size: 28px; font-weight: 800; color: #FFF; margin: 0; text-transform: uppercase; letter-spacing: 1px;">Sản phẩm mới</h2>*@
+           
+            <p style="font-weight: bold; font-size: 32px; color: #EF4444 !important; margin: 5px 0 0 0; ">SẢN PHẨM MỚI</p>
+            <p style="color: var(--text-muted); margin: 5px 0 0 0;">Những hương vị vừa ra mắt dành riêng cho bạn</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6" style="margin-bottom: 30px;">
+                <div onmouseover="this.style.border='2px solid transparent'; this.style.backgroundImage='linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.8)), linear-gradient(to right, #00f2fe, #4facfe)'; this.style.backgroundOrigin='border-box'; this.style.backgroundClip='padding-box, border-box'; this.style.transform='scale(1.02)';"
+                     onmouseout="this.style.border='1px solid rgba(255,255,255,0.1)'; this.style.backgroundImage='none'; this.style.transform='scale(1)';"
+                     style="transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; border-radius: 30px; overflow: hidden; height: 100%; min-height: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);">
+
+                    <img src="https://t4.ftcdn.net/jpg/03/14/86/17/360_F_314861732_1MnoYhjA81pqeibaEJgAfXJBr0XERD5I.jpg"
+                         style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover;" alt="New Arrival">
+
+                    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);"></div>
+
+                    <div style="position: absolute; bottom: 40px; left: 40px; right: 40px; color: #fff; z-index: 10;">
+                        <span style="background: linear-gradient(90deg, var(--primary), var(--cyan-glow)); padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Featured</span>
+
+                        <p style="font-weight: bold; font-size: 32px; color: #FFF !important; margin: 15px 0; line-height: 1.2;">CAFÉ ĐẬM VỊ</p>
+
+                        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                            <span style="font-size: 28px; font-weight: 800; color: var(--cyan-glow); text-shadow: 0 2px 10px rgba(0,0,0,0.5);">39.000 <small style="font-size: 14px; color: #FFF;">VND</small></span>
+
+                            <a href="#"
+                               onmousedown="this.style.transform='scale(0.9)'"
+                               onmouseup="this.style.transform='scale(1)'"
+                               onmouseleave="this.style.transform='scale(1)'"
+                               style="background: red; color: #fff; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 20px rgba(255,0,0,0.3); display: inline-block;">
+                                Mua ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6" style="margin-bottom: 30px;">
+                <div style="display: flex; flex-direction: column; gap: 24px; height: 100%;">
+
+                    <div onmouseover="this.style.border='2px solid transparent'; this.style.backgroundImage='linear-gradient(rgba(15,23,42,0.9), rgba(15,23,42,0.9)), linear-gradient(to right, #00f2fe, #4facfe)'; this.style.backgroundOrigin='border-box'; this.style.backgroundClip='padding-box, border-box'; this.style.transform='scale(1.02)';"
+                         onmouseout="this.style.border='1px solid rgba(255,255,255,0.08)'; this.style.backgroundImage='none'; this.style.transform='scale(1)';"
+                         style="transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex: 1; display: flex; align-items: center; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08);">
+
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 110px; flex-shrink: 0;">
+                            <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.03); border-radius: 20px; overflow: hidden;">
+                                <img src="https://premier-village-danang.com/wp-content/uploads/sites/48/2025/06/La%E2%80%99s-Cafe.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <p style="margin: 10px 0 0 0 !important; color: var(--cyan-glow); font-size: 18px; font-weight: 700; text-align: center;">65k <small style="color: #FFF;">VND</small></p>
+                        </div>
+
+                        <div style="margin-left: 20px; flex-grow: 1; text-align: center;">
+                            <span style="display: block; color: var(--cyan-glow); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Hot Trend</span>
+                            <h4 style="margin: 0 !important; font-size: 26px !important; color: #FFF !important; font-weight: 800 !important; line-height: 1.1 !important;">Café Machiato</h4>
+                            <p style="margin: 8px 0 0 0 !important; color: #CBD5E1 !important; font-size: 15px !important; font-style: italic !important; line-height: 1.4 !important;">Vị đắng espresso hòa quyện cùng lớp kem béo mịn, tan chảy trên đầu lưỡi.</p>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.3);"><i class="fa fa-angle-right"></i></div>
+                    </div>
+
+                    <div onmouseover="this.style.border='2px solid transparent'; this.style.backgroundImage='linear-gradient(rgba(15,23,42,0.9), rgba(15,23,42,0.9)), linear-gradient(to right, #27ae60, #2ecc71)'; this.style.backgroundOrigin='border-box'; this.style.backgroundClip='padding-box, border-box'; this.style.transform='scale(1.02)';"
+                         onmouseout="this.style.border='1px solid rgba(255,255,255,0.08)'; this.style.backgroundImage='none'; this.style.transform='scale(1)';"
+                         style="transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); flex: 1; display: flex; align-items: center; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.08);">
+
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 110px; flex-shrink: 0;">
+                            <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.03); border-radius: 20px; overflow: hidden;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/250px-A_small_cup_of_coffee.JPG" style="width: 100%; height: 100%; object-fit: cover; padding: 5px;">
+                            </div>
+                            <p style="margin: 10px 0 0 0 !important; color: #27ae60; font-size: 18px; font-weight: 700; text-align: center;">75k <small style="color: #FFF;">VND</small></p>
+                        </div>
+
+                        <div style="margin-left: 20px; flex-grow: 1; text-align: center;">
+                            <span style="display: block; color: #27ae60; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Healthy</span>
+                            <h4 style="margin: 0 !important; font-size: 26px !important; color: #FFF !important; font-weight: 800 !important; line-height: 1.1 !important;">Café Nóng</h4>
+                            <p style="margin: 8px 0 0 0 !important; color: #CBD5E1 !important; font-size: 15px !important; font-style: italic !important; line-height: 1.4 !important;">Hương vị thuần khiết, đánh thức giác quan từ hạt cà phê thượng hạng.</p>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.3);"><i class="fa fa-angle-right"></i></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

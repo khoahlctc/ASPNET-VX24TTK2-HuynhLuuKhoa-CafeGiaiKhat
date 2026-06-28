@@ -1,0 +1,60 @@
+﻿@{
+    ViewBag.Title = "ListOrder";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h2 class="text-center">Thống kê số lượng sản phẩm bán theo loại</h2>
+    </div>
+    <div class="card-body">
+        <canvas id="productChart" style="width:250px; height:250px;"></canvas>
+    </div>
+</div>
+@section scripts {
+    @*<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>*@
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("GetProductStats", "Summary")',
+                method: 'GET',
+                success: function (data) {
+                    var labels = data.map(item => item.TypeName);
+                    var values = data.map(item => item.SLBan);
+
+                    var ctx = document.getElementById('productChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'bar', // Có thể thay bằng 'pie', 'line', etc.
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Số lượng bán được',
+                                data: values,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: false
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
